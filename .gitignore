@@ -3,6 +3,7 @@
 
 # Ignore Gradle build output directory
 build
+app\bin\main\fr\simplon
 
 # Ignore Kotlin plugin data
 .kotlin

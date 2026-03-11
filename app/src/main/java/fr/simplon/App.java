@@ -9,6 +9,10 @@ import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.DirResourceSet;
 import org.apache.catalina.webresources.StandardRoot;
 
+import fr.simplon.controllers.AuthController;
+import fr.simplon.controllers.HomeController;
+import fr.simplon.controllers.LogoutController;
+
 public class App {
 
     public static void main(String[] args) {
@@ -24,6 +28,16 @@ public class App {
         // Lire le dossier webapp/ pour les fichiers statiques et les JSP
         Context ctx = tomcat.addWebapp("", publicFolder.getAbsolutePath());
         ctx.setReloadable(true);
+
+        Tomcat.addServlet(ctx, "HomeController", new HomeController());
+        ctx.addServletMappingDecoded("/home", "HomeController");
+
+        Tomcat.addServlet(ctx, "AuthController", new AuthController());
+        ctx.addServletMappingDecoded("/login", "AuthController");
+        ctx.addServletMappingDecoded("/register", "AuthController");
+
+        Tomcat.addServlet(ctx, "LogoutController", new LogoutController());
+        ctx.addServletMappingDecoded("/logout", "LogoutController");
 
         // Lire les classes Java avec l'annotation @WebServlet automatiquement
         File classFolder = new File("build/classes/java/main");

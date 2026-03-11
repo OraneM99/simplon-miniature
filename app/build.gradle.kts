@@ -32,7 +32,7 @@ java {
 
 application {
     // Define the main class for the application.
-    mainClass = "org.example.App"
+    mainClass = "fr.simplon.App"
 }
 
 tasks.named<Test>("test") {

@@ -1,4 +1,4 @@
-package org.example.models;
+package fr.simplon.models;
 
 public class User {
 

@@ -2,7 +2,10 @@ package fr.simplon.models;
 
 import java.util.Date;
 
-public class Post {
+public class Post implements Comparable<Post>{
+
+    private static long nbPosts = 0;
+
     private long id;
     private long owner;
     private long parent;
@@ -13,8 +16,14 @@ public class Post {
     public Post() {
     }
 
-    public Post(long id, long owner, long parent, String content, Date createdAt, boolean isDraft) {
-        this.id = id;
+    public Post(long owner, String content, Date createdAt) {
+        this.owner = owner;
+        this.content = content;
+        this.createdAt = createdAt;
+    }
+
+    public Post(long owner, long parent, String content, Date createdAt, boolean isDraft) {
+        this.id = ++nbPosts;
         this.owner = owner;
         this.parent = parent;
         this.content = content;
@@ -69,6 +78,16 @@ public class Post {
     private void setDraft(boolean draft) {
         isDraft = draft;
     }
-    
+
+    private void toggleDraft(boolean draft) {
+        isDraft = !isDraft;
+    }
+
+
+
+    @Override
+    public int compareTo(Post post) {
+        return getCreatedAt().compareTo(post.getCreatedAt());
+    }
 
 }

@@ -29,16 +29,6 @@ public class App {
         Context ctx = tomcat.addWebapp("", publicFolder.getAbsolutePath());
         ctx.setReloadable(true);
 
-        Tomcat.addServlet(ctx, "HomeController", new HomeController());
-        ctx.addServletMappingDecoded("/home", "HomeController");
-
-        Tomcat.addServlet(ctx, "AuthController", new AuthController());
-        ctx.addServletMappingDecoded("/login", "AuthController");
-        ctx.addServletMappingDecoded("/register", "AuthController");
-
-        Tomcat.addServlet(ctx, "LogoutController", new LogoutController());
-        ctx.addServletMappingDecoded("/logout", "LogoutController");
-
         // Lire les classes Java avec l'annotation @WebServlet automatiquement
         File classFolder = new File("build/classes/java/main");
         WebResourceRoot resources = new StandardRoot(ctx);

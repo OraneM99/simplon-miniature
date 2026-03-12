@@ -21,6 +21,7 @@ public class AuthController extends HttpServlet {
     public void init() {
         if (users.isEmpty()) {
             users.add(new User("admin", "admin123"));
+            getServletContext().setAttribute("users", users);
         }
     }
 

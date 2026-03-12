@@ -8,7 +8,7 @@
     List<Post> postList = (List<Post>) request.getAttribute("postList");
     String feedType = (String) request.getAttribute("feedType");
     if (feedType == null) feedType = "recommendations";
-//    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
+    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
 %>
 
 <!DOCTYPE html>
@@ -332,8 +332,8 @@
         <% for (Post post : postList) { %>
           <div class="post-card">
             <div class="post-meta">
-              <span class="post-owner"># <%= post.getOwner() %></span>
-              <span class="post-date"><%= post.getCreatedAt() %></span>
+              <span class="post-owner">@ <%= post.getOwnerUsername() %></span>
+              <span class="post-date"><%= post.getCreatedAt().format(fmt) %></span>
             </div>
             <div class="post-content"><%= post.getContent() %></div>
             <% if (post.isDraft()) { %>

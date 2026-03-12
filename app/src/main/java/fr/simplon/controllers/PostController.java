@@ -17,16 +17,15 @@ import java.util.*;
 public class PostController extends HttpServlet {
 
     private List<@NonNull Post> postList = new ArrayList<>();
-    private List<User> users = new ArrayList<>();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setAttribute("postList", postList);
-        req.getRequestDispatcher("/feeds.jsp").forward(req,resp);
+        req.getRequestDispatcher("/feeds.jsp").forward(req, resp);
 
     }
 
-    //créer un post
+    // créer un post
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -37,32 +36,33 @@ public class PostController extends HttpServlet {
         }
 
         String newPost = req.getParameter("newPost");
-        //Long postId = Long.parseLong(req.getParameter("postId"));
-        //Long parentPost = Long.parseLong(req.getParameter("parent"));
+        // Long postId = Long.parseLong(req.getParameter("postId"));
+        // Long parentPost = Long.parseLong(req.getParameter("parent"));
         Long postId = System.currentTimeMillis();
-        Long parentPost = 0L;
-        String buttonLike = req.getParameter("buttonLike");
+        // String buttonLike = req.getParameter("buttonLike");
 
-        if(newPost != null && !newPost.trim().isEmpty()){
+        if (newPost != null && !newPost.trim().isEmpty()) {
             String username = (String) session.getAttribute("loggedUser");
-            User owner = findByUserName(username);
-            if(owner != null){
-                postList.add(new Post(postId, owner.getId(), parentPost, newPost.trim(),new Date()));
+
+            List<User> users = (List<User>) getServletContext().getAttribute("users");
+            User owner = findByUserName(username, users);
+
+            if (owner != null) {
+                postList.add(
+                        new Post(postId, owner.getId(), owner.getUsername(), 0L, newPost.trim()));
                 Collections.sort(postList, Comparator.reverseOrder());
             }
         }
-        resp.sendRedirect(req.getContextPath()+"/feeds");
+        resp.sendRedirect(req.getContextPath() + "/feeds");
     }
 
-    private User findByUserName(String username) {
+    private User findByUserName(String username, List<User> users) {
         for (User user : users) {
-            if (user.getUsername().equals(username)
-                  ) {
+            if (user.getUsername().equals(username)) {
                 return user;
             }
         }
         return null;
     }
-
 
 }

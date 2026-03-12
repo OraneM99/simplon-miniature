@@ -1,27 +1,30 @@
 package fr.simplon.models;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
-public class Post implements Comparable<Post>{
+public class Post implements Comparable<Post> {
 
     private static long nbPosts = 0;
 
     private long id;
     private long owner;
+    private String ownerUsername;
     private long parent;
     private String content;
-    private Date createdAt;
+    private LocalDateTime createdAt;
     private boolean isDraft = false;
 
     public Post() {
     }
 
-    public Post(long id, long owner, long parent, String content, Date createdAt) {
+    public Post(long id, long owner, String ownerUsername, long parent, String content) {
         this.id = id;
         this.owner = owner;
+        this.ownerUsername = ownerUsername;
         this.parent = parent;
         this.content = content;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Post(long owner, long parent, String content, Date createdAt, boolean isDraft) {
@@ -29,7 +32,7 @@ public class Post implements Comparable<Post>{
         this.owner = owner;
         this.parent = parent;
         this.content = content;
-        this.createdAt = createdAt;
+        this.createdAt = LocalDateTime.now();
         this.isDraft = isDraft;
     }
 
@@ -49,7 +52,7 @@ public class Post implements Comparable<Post>{
         return content;
     }
 
-    public Date getCreatedAt() {
+    public LocalDateTime getCreatedAt() {
         return createdAt;
     }
 
@@ -73,7 +76,7 @@ public class Post implements Comparable<Post>{
         this.content = content;
     }
 
-    private void setCreatedAt(Date createdAt) {
+    private void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
 
@@ -85,11 +88,25 @@ public class Post implements Comparable<Post>{
         isDraft = !isDraft;
     }
 
-
-
     @Override
     public int compareTo(Post post) {
         return getCreatedAt().compareTo(post.getCreatedAt());
+    }
+
+    public static long getNbPosts() {
+        return nbPosts;
+    }
+
+    public static void setNbPosts(long nbPosts) {
+        Post.nbPosts = nbPosts;
+    }
+
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
+
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
     }
 
 }

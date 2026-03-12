@@ -31,27 +31,26 @@ public class PostController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        if (session != null && session.getAttribute("loggedUser") != null) {
+        if (session == null || session.getAttribute("loggedUser") == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
             return;
         }
 
         String newPost = req.getParameter("newPost");
-
-        Long postId = Long.parseLong(req.getParameter("postId"));
-        Long parentPost = Long.parseLong(req.getParameter("parent"));
-
+        //Long postId = Long.parseLong(req.getParameter("postId"));
+        //Long parentPost = Long.parseLong(req.getParameter("parent"));
+        Long postId = System.currentTimeMillis();
+        Long parentPost = 0L;
         String buttonLike = req.getParameter("buttonLike");
-
-
 
         if(newPost != null && !newPost.trim().isEmpty()){
             String username = (String) session.getAttribute("loggedUser");
             User owner = findByUserName(username);
-            postList.add(new Post(postId, owner.getId(), parentPost, newPost.trim(),new Date()));
-            Collections.sort(postList, Comparator.reverseOrder());
+            if(owner != null){
+                postList.add(new Post(postId, owner.getId(), parentPost, newPost.trim(),new Date()));
+                Collections.sort(postList, Comparator.reverseOrder());
+            }
         }
-
         resp.sendRedirect(req.getContextPath()+"/feeds");
     }
 

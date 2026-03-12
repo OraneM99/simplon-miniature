@@ -8,7 +8,7 @@
     List<Post> postList = (List<Post>) request.getAttribute("postList");
     String feedType = (String) request.getAttribute("feedType");
     if (feedType == null) feedType = "recommendations";
-    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
+//    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
 %>
 
 <!DOCTYPE html>

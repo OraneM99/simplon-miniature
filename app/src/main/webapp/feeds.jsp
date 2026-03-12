@@ -179,7 +179,34 @@
     .btn-primary:hover { background: var(--accent2); }
     .btn-primary:active { transform: scale(0.97); }
 
-    /* Feed tabs */
+    .btn-like {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 0.3rem 0.85rem;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
+    }
+
+    .btn-like:hover {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: rgba(192,103,90,0.08);
+    }
+
+    .btn-like.liked {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: rgba(192,103,90,0.15);
+    }
+
+    .btn-like.liked:hover {
+      background: rgba(192,103,90,0.25);
+      transform: scale(1.05);
+    }
+
     .feed-tabs {
       display: flex;
       gap: 0;
@@ -336,6 +363,16 @@
               <span class="post-date"><%= post.getCreatedAt().format(fmt) %></span>
             </div>
             <div class="post-content"><%= post.getContent() %></div>
+            
+            <% 
+            boolean liked = post.isLiked();
+            String likeClass = liked ? "btn-like liked" : "btn-like";
+            %>
+            <form method="post" action="${pageContext.request.contextPath}/feeds">
+                <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
+                <button type="submit" class="<%= likeClass %>">♥</button>
+            </form>
+
             <% if (post.isDraft()) { %>
               <span class="post-draft">Brouillon</span>
             <% } %>

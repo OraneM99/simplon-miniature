@@ -14,12 +14,13 @@ public class Post implements Comparable<Post> {
     private String content;
     private LocalDateTime createdAt;
     private boolean isDraft = false;
+    private boolean isLiked = false;
 
     public Post() {
     }
 
     public Post(long id, long owner, String ownerUsername, long parent, String content) {
-        this.id = id;
+        this.id = ++nbPosts;
         this.owner = owner;
         this.ownerUsername = ownerUsername;
         this.parent = parent;
@@ -88,9 +89,12 @@ public class Post implements Comparable<Post> {
         isDraft = !isDraft;
     }
 
-    @Override
-    public int compareTo(Post post) {
-        return getCreatedAt().compareTo(post.getCreatedAt());
+    public boolean isLiked() {
+        return isLiked;
+    }
+
+    public void toggleLike() {
+        isLiked = !isLiked;
     }
 
     public static long getNbPosts() {
@@ -107,6 +111,11 @@ public class Post implements Comparable<Post> {
 
     public void setOwnerUsername(String ownerUsername) {
         this.ownerUsername = ownerUsername;
+    }
+
+    @Override
+    public int compareTo(Post post) {
+        return getCreatedAt().compareTo(post.getCreatedAt());
     }
 
 }

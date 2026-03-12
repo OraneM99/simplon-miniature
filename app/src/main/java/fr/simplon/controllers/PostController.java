@@ -25,7 +25,6 @@ public class PostController extends HttpServlet {
 
     }
 
-    // créer un post
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
@@ -39,7 +38,7 @@ public class PostController extends HttpServlet {
         // Long postId = Long.parseLong(req.getParameter("postId"));
         // Long parentPost = Long.parseLong(req.getParameter("parent"));
         Long postId = System.currentTimeMillis();
-        // String buttonLike = req.getParameter("buttonLike");
+        String buttonLike = req.getParameter("buttonLike");
 
         if (newPost != null && !newPost.trim().isEmpty()) {
             String username = (String) session.getAttribute("loggedUser");
@@ -52,6 +51,20 @@ public class PostController extends HttpServlet {
                         new Post(postId, owner.getId(), owner.getUsername(), 0L, newPost.trim()));
                 Collections.sort(postList, Comparator.reverseOrder());
             }
+        } else if (buttonLike != null) {
+            try {
+                long likePostId = Long.parseLong(buttonLike);
+                for (Post post : postList) {
+                    if (post.getId() == likePostId) {
+                        post.toggleLike();
+                        break;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                resp.sendError(400, "ID invalide.");
+                return;
+            }
+
         }
         resp.sendRedirect(req.getContextPath() + "/feeds");
     }

@@ -1,11 +1,12 @@
 package fr.simplon.models;
 
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.*;
 
 public class Post implements Comparable<Post> {
 
     private static long nbPosts = 0;
+    private List<Map<String, Object>> comments = new ArrayList<>();
 
     private long id;
     private long owner;
@@ -116,6 +117,18 @@ public class Post implements Comparable<Post> {
     @Override
     public int compareTo(Post post) {
         return getCreatedAt().compareTo(post.getCreatedAt());
+    }
+
+    public void addComment(long userId, String username, String content) {
+        Map<String, Object> comment = new HashMap<>();
+        comment.put("username", username);
+        comment.put("content", content);
+        comment.put("createdAt", LocalDateTime.now());
+        comments.add(comment);
+    }
+
+    public List<Map<String, Object>> getComments() {
+        return comments;
     }
 
 }

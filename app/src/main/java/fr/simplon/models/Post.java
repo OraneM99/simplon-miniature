@@ -16,8 +16,10 @@ public class Post implements Comparable<Post>{
     public Post() {
     }
 
-    public Post(long owner, String content, Date createdAt) {
+    public Post(long id, long owner, long parent, String content, Date createdAt) {
+        this.id = id;
         this.owner = owner;
+        this.parent = parent;
         this.content = content;
         this.createdAt = createdAt;
     }

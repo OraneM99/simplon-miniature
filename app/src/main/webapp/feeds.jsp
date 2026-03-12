@@ -303,7 +303,7 @@
     <div class="compose">
       <div class="compose-label">Nouveau post</div>
       <form method="post" action="${pageContext.request.contextPath}/feeds">
-        <input type="hidden" name="ownerId" value="1">
+        <input type="hidden" name="owner" value="username">
         <textarea name="newPost" placeholder="Quoi de neuf ?"></textarea>
         <div class="compose-footer">
           <button type="submit" class="btn-primary">Publier</button>

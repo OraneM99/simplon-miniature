@@ -37,7 +37,7 @@ public class AuthController extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         if (session != null && session.getAttribute("loggedUser") != null) {
-            resp.sendRedirect(req.getContextPath() + "/home");
+            resp.sendRedirect(req.getContextPath() + "/feeds");
             return;
         }
 
@@ -73,7 +73,7 @@ public class AuthController extends HttpServlet {
 
         if (userFound != null) {
             createSession(req, userFound.getUsername());
-            resp.sendRedirect(req.getContextPath() + "/home");
+            resp.sendRedirect(req.getContextPath() + "/feeds");
         } else {
             req.setAttribute("error", "Identifiants incorrects.");
             req.getRequestDispatcher("/login.jsp").forward(req, resp);

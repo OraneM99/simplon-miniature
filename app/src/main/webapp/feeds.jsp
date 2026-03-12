@@ -1,20 +1,22 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="fr.simplon.models.Post" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
 
 <%
-    List<Post> postList = (List<Post>) request.getAttribute("postList");
-    String feedType = (String) request.getAttribute("feedType");
-    if (feedType == null) feedType = "recommendations";
-    DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
+  List<Post> postList = (List<Post>) request.getAttribute("postList");
+  String feedType = (String) request.getAttribute("feedType");
+  if (feedType == null) feedType = "recommendations";
+  DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd MMM yyyy · HH:mm");
 %>
 
 <!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fil — Miniature</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -188,6 +190,7 @@
       padding: 0.3rem 0.85rem;
       cursor: pointer;
       transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
+      margin-right: 0.5rem;
     }
 
     .btn-like:hover {
@@ -249,18 +252,21 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
-      padding: 1.25rem 1.5rem;
+      padding: 1.5rem;
       animation: fadeUp 0.5s ease both;
       transition: border-color 0.2s;
     }
 
     .post-card:hover { border-color: rgba(200,169,110,0.3); }
 
-    .post-meta {
+    /* Post Header */
+    .post-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 0.75rem;
+      margin-bottom: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
     }
 
     .post-owner {
@@ -275,15 +281,16 @@
       color: var(--muted);
     }
 
+    /* Post Content */
     .post-content {
       font-size: 0.92rem;
       line-height: 1.65;
       color: var(--text);
+      margin-bottom: 1.25rem;
     }
 
     .post-draft {
       display: inline-block;
-      margin-top: 0.6rem;
       font-size: 0.68rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -291,6 +298,117 @@
       border: 1px solid var(--border);
       border-radius: 999px;
       padding: 0.2rem 0.6rem;
+      margin-right: 0.5rem;
+    }
+
+    /* Post Actions */
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-comment {
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: #0d0d0f;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-comment:hover { background: var(--accent2); }
+
+    /* Comments Section - Intégré au post */
+    .comments-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .comments-header {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      padding: 0.75rem;
+      background: rgba(255, 255, 255, 0.02);
+      border-left: 2px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    .comment-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .comment-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      font-size: 0.8rem;
+      color: var(--accent);
+    }
+
+    .comment-time {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .comment-text {
+      color: var(--text);
+      font-size: 0.85rem;
+      line-height: 1.4;
+      margin-left: 0.25rem;
+    }
+
+    /* Comment Form */
+    .comment-form {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .comment-input {
+      flex: 1;
+      min-width: 200px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem 0.75rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .comment-input::placeholder { color: var(--muted); }
+    .comment-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(200,169,110,0.1);
     }
 
     /* Empty state */
@@ -315,73 +433,111 @@
 </head>
 <body>
 
-  <div class="orb"></div>
+<div class="orb"></div>
 
-  <nav>
-    <a class="nav-logo" href="${pageContext.request.contextPath}/feeds">Miniature</a>
-    <div class="nav-links">
-      <a href="${pageContext.request.contextPath}/home">Accueil</a>
-      <a href="${pageContext.request.contextPath}/logout" class="logout">Se déconnecter</a>
-    </div>
-  </nav>
-
-  <div class="layout">
-
-    <div class="compose">
-      <div class="compose-label">Nouveau post</div>
-      <form method="post" action="${pageContext.request.contextPath}/feeds">
-        <input type="hidden" name="owner" value="username">
-        <textarea name="newPost" placeholder="Quoi de neuf ?"></textarea>
-        <div class="compose-footer">
-          <button type="submit" class="btn-primary">Publier</button>
-        </div>
-      </form>
-    </div>
-
-    <div class="feed-tabs">
-      <a href="${pageContext.request.contextPath}/feeds?type=recommendations"
-         class="<%= "recommendations".equals(feedType) ? "active" : "" %>">
-        Recommandations
-      </a>
-      <a href="${pageContext.request.contextPath}/feeds?type=subscriptions"
-         class="<%= "subscriptions".equals(feedType) ? "active" : "" %>">
-        Abonnements
-      </a>
-    </div>
-
-    <div class="post-list">
-      <% if (postList == null || postList.isEmpty()) { %>
-        <div class="empty">
-          <div class="empty-icon">✦</div>
-          <p>Aucun post pour le moment.<br>Soyez le premier à publier !</p>
-        </div>
-      <% } else { %>
-        <% for (Post post : postList) { %>
-          <div class="post-card">
-            <div class="post-meta">
-              <span class="post-owner">@ <%= post.getOwnerUsername() %></span>
-              <span class="post-date"><%= post.getCreatedAt().format(fmt) %></span>
-            </div>
-            <div class="post-content"><%= post.getContent() %></div>
-            
-            <% 
-            boolean liked = post.isLiked();
-            String likeClass = liked ? "btn-like liked" : "btn-like";
-            %>
-            <form method="post" action="${pageContext.request.contextPath}/feeds">
-                <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
-                <button type="submit" class="<%= likeClass %>">♥</button>
-            </form>
-
-            <% if (post.isDraft()) { %>
-              <span class="post-draft">Brouillon</span>
-            <% } %>
-          </div>
-        <% } %>
-      <% } %>
-    </div>
-
+<nav>
+  <a class="nav-logo" href="${pageContext.request.contextPath}/feeds">Miniature</a>
+  <div class="nav-links">
+    <a href="${pageContext.request.contextPath}/home">Accueil</a>
+    <a href="${pageContext.request.contextPath}/logout" class="logout">Se déconnecter</a>
   </div>
+</nav>
+
+<div class="layout">
+
+  <div class="compose">
+    <div class="compose-label">Nouveau post</div>
+    <form method="post" action="${pageContext.request.contextPath}/feeds">
+      <textarea name="newPost" placeholder="Quoi de neuf ?"></textarea>
+      <div class="compose-footer">
+        <button type="submit" class="btn-primary">Publier</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="feed-tabs">
+    <a href="${pageContext.request.contextPath}/feeds?type=recommendations"
+       class="<%= "recommendations".equals(feedType) ? "active" : "" %>">
+      Recommandations
+    </a>
+    <a href="${pageContext.request.contextPath}/feeds?type=subscriptions"
+       class="<%= "subscriptions".equals(feedType) ? "active" : "" %>">
+      Abonnements
+    </a>
+  </div>
+
+  <div class="post-list">
+    <% if (postList == null || postList.isEmpty()) { %>
+    <div class="empty">
+      <div class="empty-icon">✦</div>
+      <p>Aucun post pour le moment.<br>Soyez le premier à publier !</p>
+    </div>
+    <% } else { %>
+    <% for (Post post : postList) { %>
+    <div class="post-card">
+
+      <!-- POST HEADER -->
+      <div class="post-header">
+        <span class="post-owner">@ <%= post.getOwnerUsername() %></span>
+        <span class="post-date"><%= post.getCreatedAt().format(fmt) %></span>
+      </div>
+
+      <!-- POST CONTENT -->
+      <div class="post-content"><%= post.getContent() %></div>
+
+      <!-- DRAFT BADGE -->
+      <div style="margin-bottom: 1rem;">
+        <% if (post.isDraft()) { %>
+        <span class="post-draft">Brouillon</span>
+        <% } %>
+      </div>
+
+      <!-- POST ACTIONS (Like) -->
+      <div class="post-actions">
+        <%
+          boolean liked = post.isLiked();
+          String likeClass = liked ? "btn-like liked" : "btn-like";
+        %>
+        <form method="post" action="${pageContext.request.contextPath}/feeds" style="margin: 0; display: flex;">
+          <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
+          <button type="submit" class="<%= likeClass %>">♥ J'aime</button>
+        </form>
+      </div>
+
+      <!-- COMMENTS SECTION (Intégré au post) -->
+      <div class="comments-section">
+
+        <!-- Comments List (si des commentaires existent) -->
+        <% List<Map<String, Object>> comments = post.getComments(); %>
+        <% if (comments != null && !comments.isEmpty()) { %>
+        <div class="comments-list">
+          <% for (Map<String, Object> comment : comments) { %>
+          <div class="comment-item">
+            <div class="comment-meta">
+              <span class="comment-author">@ <%= comment.get("username") %></span>
+              <span class="comment-time"><%= ((LocalDateTime)comment.get("createdAt")).format(fmt) %></span>
+            </div>
+            <div class="comment-text"><%= comment.get("content") %></div>
+          </div>
+          <% } %>
+        </div>
+        <% } %>
+
+        <!-- Comment Form -->
+        <form method="post" action="${pageContext.request.contextPath}/feeds" class="comment-form">
+          <input type="hidden" name="postId" value="<%= post.getId() %>">
+          <input type="text" name="newComment" placeholder="Ajouter un commentaire..." class="comment-input">
+          <button type="submit" class="btn-comment">Envoyer</button>
+        </form>
+
+      </div>
+
+    </div>
+    <% } %>
+    <% } %>
+  </div>
+
+</div>
 
 </body>
 </html>

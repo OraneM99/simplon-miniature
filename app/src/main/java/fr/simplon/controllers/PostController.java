@@ -20,6 +20,12 @@ public class PostController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html; charset=UTF-8");
+
+        String feedType = req.getParameter("type");
+        req.setAttribute("feedType", feedType != null ? feedType : "recommendations");
         req.setAttribute("postList", postList);
         req.getRequestDispatcher("/feeds.jsp").forward(req, resp);
 
@@ -27,7 +33,9 @@ public class PostController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        req.setCharacterEncoding("UTF-8");
+        resp.setCharacterEncoding("UTF-8");
+        resp.setContentType("text/html; charset=UTF-8");
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedUser") == null) {
             resp.sendRedirect(req.getContextPath() + "/login");
@@ -35,23 +43,42 @@ public class PostController extends HttpServlet {
         }
 
         String newPost = req.getParameter("newPost");
-        // Long postId = Long.parseLong(req.getParameter("postId"));
-        // Long parentPost = Long.parseLong(req.getParameter("parent"));
-        Long postId = System.currentTimeMillis();
+        String newComment = req.getParameter("newComment");
+
         String buttonLike = req.getParameter("buttonLike");
+        String postIdStr = req.getParameter("postId");
 
         if (newPost != null && !newPost.trim().isEmpty()) {
             String username = (String) session.getAttribute("loggedUser");
-
             List<User> users = (List<User>) getServletContext().getAttribute("users");
             User owner = findByUserName(username, users);
 
             if (owner != null) {
+                Long postId = System.currentTimeMillis();
                 postList.add(
                         new Post(postId, owner.getId(), owner.getUsername(), 0L, newPost.trim()));
                 Collections.sort(postList, Comparator.reverseOrder());
             }
-        } else if (buttonLike != null) {
+        } else if(newComment != null && !newComment.trim().isEmpty() && postIdStr != null){
+            try{
+                long postId = Long.parseLong(postIdStr);
+                String username = (String) session.getAttribute("loggedUser");
+                List<User> users = (List<User>) getServletContext().getAttribute("users");
+                User owner = findByUserName(username, users);
+                if (owner != null) {
+                    Post post = findPostById(postId);
+                    if (post != null) {
+                        // ✅ Appel simplifié
+                        post.addComment(owner.getId(), owner.getUsername(), newComment.trim());
+                    }
+                }
+            } catch (NumberFormatException e) {
+                resp.sendError(400, "ID invalide.");
+                return;
+            }
+        }
+
+        else if(buttonLike != null) {
             try {
                 long likePostId = Long.parseLong(buttonLike);
                 for (Post post : postList) {
@@ -69,6 +96,15 @@ public class PostController extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/feeds");
     }
 
+    private Post findPostById(long postId) {
+        for(Post post : postList){
+            if(post.getId() == postId){
+                return post;
+            }
+        }
+        return null;
+    }
+
     private User findByUserName(String username, List<User> users) {
         for (User user : users) {
             if (user.getUsername().equals(username)) {
@@ -77,5 +113,6 @@ public class PostController extends HttpServlet {
         }
         return null;
     }
+
 
 }

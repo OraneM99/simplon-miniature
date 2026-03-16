@@ -162,9 +162,6 @@ public class PostController extends HttpServlet {
         else if (buttonLike != null) {
             try {
                 long likePostId = Long.parseLong(buttonLike);
-
-                String username = (String) session.getAttribute("loggedUser");
-                List<User> users = (List<User>) getServletContext().getAttribute("users");
                 User currentUser = findByUserName(username, users);
 
                 if (currentUser != null) {

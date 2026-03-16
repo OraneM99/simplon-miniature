@@ -20,7 +20,8 @@ public class AuthController extends HttpServlet {
     @Override
     public void init() {
         if (users.isEmpty()) {
-            users.add(new User("admin", "admin123"));
+            users.add(new User(1L, "admin", "admin123"));
+            users.add(new User(2L, "orane", "1234"));
             getServletContext().setAttribute("users", users);
         }
     }

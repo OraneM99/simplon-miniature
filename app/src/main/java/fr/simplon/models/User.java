@@ -12,10 +12,10 @@ public class User {
         this.password = password;
     }
 
-    public User(long id, String username, String email, String password) {
-        this(username, password);
+    public User(long id, String username, String password) {
         this.id = id;
-        this.email = email;
+        this.username = username;
+        this.password = password;
     }
 
     public long getId() {

@@ -15,7 +15,7 @@ public class Post implements Comparable<Post> {
     private String content;
     private LocalDateTime createdAt;
     private boolean isDraft = false;
-    private boolean isLiked = false;
+    private Set<Long> likedByUserIds = new HashSet<>();
 
     private String mediaUrl;
     private AttachmentType attachmentType = AttachmentType.NONE;
@@ -105,12 +105,20 @@ public class Post implements Comparable<Post> {
         isDraft = !isDraft;
     }
 
-    public boolean isLiked() {
-        return isLiked;
+    public int getLikeCount() {
+        return likedByUserIds.size();
     }
 
-    public void toggleLike() {
-        isLiked = !isLiked;
+    public boolean isLikedBy(long userId) {
+        return likedByUserIds.contains(userId);
+    }
+
+    public void toggleLike(long userId) {
+        if (likedByUserIds.contains(userId)) {
+            likedByUserIds.remove(userId);
+        } else {
+            likedByUserIds.add(userId);
+        }
     }
 
     public static long getNbPosts() {
@@ -131,10 +139,6 @@ public class Post implements Comparable<Post> {
 
     public void setComments(List<Map<String, Object>> comments) {
         this.comments = comments;
-    }
-
-    private void setLiked(boolean isLiked) {
-        this.isLiked = isLiked;
     }
 
     public String getMediaUrl() {

@@ -32,11 +32,21 @@ public class PostController extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html; charset=UTF-8");
 
+        HttpSession session = req.getSession(false);
+        if (session != null && session.getAttribute("loggedUser") != null) {
+            String username = (String) session.getAttribute("loggedUser");
+            List<User> users = (List<User>) getServletContext().getAttribute("users");
+            User currentUser = findByUserName(username, users);
+            if (currentUser != null) {
+                req.setAttribute("currentUserId", currentUser.getId());
+            }
+            System.out.println("currentUserId envoyé à la JSP : " + currentUser.getId());
+        }
+
         String feedType = req.getParameter("type");
         req.setAttribute("feedType", feedType != null ? feedType : "recommendations");
         req.setAttribute("postList", postList);
         req.getRequestDispatcher("/feeds.jsp").forward(req, resp);
-
     }
 
     @Override
@@ -127,18 +137,25 @@ public class PostController extends HttpServlet {
         else if (buttonLike != null) {
             try {
                 long likePostId = Long.parseLong(buttonLike);
-                for (Post post : postList) {
-                    if (post.getId() == likePostId) {
-                        post.toggleLike();
-                        break;
+
+                String username = (String) session.getAttribute("loggedUser");
+                List<User> users = (List<User>) getServletContext().getAttribute("users");
+                User currentUser = findByUserName(username, users);
+
+                if (currentUser != null) {
+                    for (Post post : postList) {
+                        if (post.getId() == likePostId) {
+                            post.toggleLike(currentUser.getId());
+                            break;
+                        }
                     }
                 }
             } catch (NumberFormatException e) {
                 resp.sendError(400, "ID invalide.");
                 return;
             }
-
         }
+
         resp.sendRedirect(req.getContextPath() + "/feeds");
     }
 

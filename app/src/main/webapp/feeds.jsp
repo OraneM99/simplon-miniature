@@ -506,17 +506,19 @@
             </div>
           <% } %>
 
-          <footer>
-            <%
-              boolean liked = post.isLiked();
-              String likeClass = liked ? "btn-like liked" : "btn-like";
-            %>
-            <form method="post" action="${pageContext.request.contextPath}/feeds"
-                  style="margin:0; display:flex;">
-              <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
-              <button type="submit" class="<%= likeClass %>">♥ J'aime</button>
-            </form>
-          </footer>
+        <%
+          Long currentUserId = (Long) request.getAttribute("currentUserId");
+          long uid = currentUserId != null ? currentUserId : -1L;
+        %>
+
+        <footer>
+          <form method="post" action="<%= request.getContextPath() %>/feeds">
+            <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
+            <button type="submit" class="btn-like <%= post.isLikedBy(uid) ? "liked" : "" %>">
+              ❤ <span><%= post.getLikeCount() %></span>
+            </button>
+          </form>
+        </footer>
 
           <section class="comments-section">
             <% List<Map<String, Object>> comments = post.getComments(); %>

@@ -17,6 +17,9 @@ public class Post implements Comparable<Post> {
     private boolean isDraft = false;
     private boolean isLiked = false;
 
+    private String mediaUrl;
+    private AttachmentType attachmentType = AttachmentType.NONE;
+
     public Post() {
     }
 
@@ -36,6 +39,18 @@ public class Post implements Comparable<Post> {
         this.content = content;
         this.createdAt = LocalDateTime.now();
         this.isDraft = isDraft;
+    }
+
+    public Post(long id, long owner, String ownerUsername, long parent, String content, String mediaUrl,
+            AttachmentType attachmentType) {
+        this.id = ++nbPosts;
+        this.owner = owner;
+        this.ownerUsername = ownerUsername;
+        this.parent = parent;
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+        this.mediaUrl = mediaUrl;
+        this.attachmentType = attachmentType != null ? attachmentType : AttachmentType.NONE;
     }
 
     public long getId() {
@@ -112,6 +127,37 @@ public class Post implements Comparable<Post> {
 
     public void setOwnerUsername(String ownerUsername) {
         this.ownerUsername = ownerUsername;
+    }
+
+    public void setComments(List<Map<String, Object>> comments) {
+        this.comments = comments;
+    }
+
+    private void setLiked(boolean isLiked) {
+        this.isLiked = isLiked;
+    }
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    private void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
+
+    public AttachmentType getAttachmentType() {
+        return attachmentType;
+    }
+
+    private void setAttachmentType(AttachmentType attachmentType) {
+        this.attachmentType = attachmentType;
+    }
+
+    public boolean hasMedia() {
+        return attachmentType != null
+                && attachmentType != AttachmentType.NONE
+                && mediaUrl != null
+                && !mediaUrl.isBlank();
     }
 
     @Override

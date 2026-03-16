@@ -11,5 +11,5 @@ build
 .vscode
 .idea
 
-app\tomcat.8080
-app\bin
+app/tomcat.8080/*
+app/bin/*

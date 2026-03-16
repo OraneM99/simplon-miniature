@@ -418,10 +418,9 @@
       to   { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 <body>
-
-<span class="orb" aria-hidden="true"></span>
 
 <nav>
   <a class="nav-logo" href="${pageContext.request.contextPath}/feeds">Miniature</a>
@@ -484,8 +483,8 @@
             </time>
           </header>
 
-          <p class="post-content"><%= post.getContent() %></p>
-          
+          <p class="post-content" data-markdown="<%= post.getContent().replace("\"", "&quot;").replace("<", "&lt;") %>"></p>
+
           <% if (post.hasMedia()) { %>
             <div class="post-media">
               <% if (post.getAttachmentType() == AttachmentType.IMAGE) { %>
@@ -557,6 +556,11 @@
   <% } %>
 
 </main>
+<script>
+  document.querySelectorAll('[data-markdown]').forEach(el => {
+    el.innerHTML = marked.parse(el.dataset.markdown);
+  });
+</script>
 
 </body>
 </html>

@@ -112,6 +112,11 @@ public class AuthController extends HttpServlet {
         resp.sendRedirect(req.getContextPath() + "/login?registered=true");
     }
 
+    /*
+     * varargs (String... fields) permet de passer autant de String sans définir le
+     * nombre
+     * à l'avance
+     */
     private boolean isValidInput(String... fields) {
         for (String field : fields) {
             if (field == null || field.trim().isEmpty())

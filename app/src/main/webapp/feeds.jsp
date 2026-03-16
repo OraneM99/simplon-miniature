@@ -4,6 +4,7 @@
 <%@ page import="java.util.Map" %>
 <%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="fr.simplon.models.AttachmentType" %>
 
 <%
   List<Post> postList = (List<Post>) request.getAttribute("postList");
@@ -16,7 +17,6 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Fil — Miniature</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
@@ -61,7 +61,6 @@
       z-index: 0;
     }
 
-    /* Nav */
     nav {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -86,7 +85,7 @@
     .nav-links {
       display: flex;
       gap: 0.5rem;
-      align-items: center;
+      list-style: none;
     }
 
     .nav-links a {
@@ -103,13 +102,9 @@
 
     .nav-links a:hover { color: var(--text); background: var(--border); }
     .nav-links a.logout { color: var(--danger); }
-    .nav-links a.logout:hover {
-      background: rgba(192,103,90,0.1);
-      color: var(--danger);
-    }
+    .nav-links a.logout:hover { background: rgba(192,103,90,0.1); }
 
-    /* Layout */
-    .layout {
+    main {
       max-width: 680px;
       margin: 0 auto;
       padding: 7rem 1.5rem 4rem;
@@ -117,7 +112,6 @@
       z-index: 1;
     }
 
-    /* Compose box */
     .compose {
       background: var(--surface);
       border: 1px solid var(--border);
@@ -181,47 +175,20 @@
     .btn-primary:hover { background: var(--accent2); }
     .btn-primary:active { transform: scale(0.97); }
 
-    .btn-like {
-      background: none;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      color: var(--muted);
-      font-size: 0.9rem;
-      padding: 0.3rem 0.85rem;
-      cursor: pointer;
-      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
-      margin-right: 0.5rem;
-    }
-
-    .btn-like:hover {
-      color: var(--danger);
-      border-color: var(--danger);
-      background: rgba(192,103,90,0.08);
-    }
-
-    .btn-like.liked {
-      color: var(--danger);
-      border-color: var(--danger);
-      background: rgba(192,103,90,0.15);
-    }
-
-    .btn-like.liked:hover {
-      background: rgba(192,103,90,0.25);
-      transform: scale(1.05);
-    }
-
     .feed-tabs {
       display: flex;
-      gap: 0;
       margin-bottom: 1.5rem;
       border: 1px solid var(--border);
       border-radius: 10px;
       overflow: hidden;
+      list-style: none;
       animation: fadeUp 0.6s ease 0.1s both;
     }
 
+    .feed-tabs li { flex: 1; }
+
     .feed-tabs a {
-      flex: 1;
+      display: block;
       text-align: center;
       padding: 0.7rem;
       font-size: 0.78rem;
@@ -234,21 +201,18 @@
       transition: color 0.2s, background 0.2s;
     }
 
-    .feed-tabs a:first-child { border-right: 1px solid var(--border); }
+    .feed-tabs li:first-child a { border-right: 1px solid var(--border); }
     .feed-tabs a:hover { color: var(--text); background: var(--border); }
-    .feed-tabs a.active {
-      color: var(--accent);
-      background: rgba(200,169,110,0.08);
-    }
+    .feed-tabs a.active { color: var(--accent); background: rgba(200,169,110,0.08); }
 
-    /* Posts */
     .post-list {
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      list-style: none;
     }
 
-    .post-card {
+    article {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 14px;
@@ -257,10 +221,9 @@
       transition: border-color 0.2s;
     }
 
-    .post-card:hover { border-color: rgba(200,169,110,0.3); }
+    article:hover { border-color: rgba(200,169,110,0.3); }
 
-    /* Post Header */
-    .post-header {
+    article > header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -272,7 +235,6 @@
     .post-owner {
       font-size: 0.78rem;
       font-weight: 500;
-      letter-spacing: 0.05em;
       color: var(--accent);
     }
 
@@ -281,28 +243,40 @@
       color: var(--muted);
     }
 
-    /* Post Content */
     .post-content {
       font-size: 0.92rem;
       line-height: 1.65;
-      color: var(--text);
       margin-bottom: 1.25rem;
     }
 
-    .post-draft {
-      display: inline-block;
-      font-size: 0.68rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
+    .post-media {
+      margin-bottom: 1.25rem;
+      border-radius: 10px;
+      overflow: hidden;
       border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.2rem 0.6rem;
-      margin-right: 0.5rem;
     }
 
-    /* Post Actions */
-    .post-actions {
+    .media-img,
+    .media-video {
+      width: 100%;
+      display: block;
+      max-height: 400px;
+      object-fit: cover;
+    }
+
+    .media-link {
+      display: block;
+      padding: 0.85rem 1rem;
+      color: var(--accent);
+      font-size: 0.85rem;
+      text-decoration: none;
+      word-break: break-all;
+      transition: background 0.2s;
+    }
+
+    .media-link:hover { background: rgba(200,169,110,0.08); }
+
+    article > footer {
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -311,36 +285,25 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .btn-comment {
-      padding: 0.5rem 1rem;
-      background: var(--accent);
-      color: #0d0d0f;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.75rem;
-      font-weight: 600;
-      border: none;
-      border-radius: 6px;
+    .btn-like {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 0.3rem 0.85rem;
       cursor: pointer;
-      transition: background 0.2s;
-      white-space: nowrap;
+      transition: color 0.2s, border-color 0.2s, background 0.2s, transform 0.1s;
     }
 
-    .btn-comment:hover { background: var(--accent2); }
+    .btn-like:hover { color: var(--danger); border-color: var(--danger); background: rgba(192,103,90,0.08); }
+    .btn-like.liked { color: var(--danger); border-color: var(--danger); background: rgba(192,103,90,0.15); }
+    .btn-like.liked:hover { background: rgba(192,103,90,0.25); transform: scale(1.05); }
 
-    /* Comments Section - Intégré au post */
     .comments-section {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-    }
-
-    .comments-header {
-      font-size: 0.75rem;
-      font-weight: 600;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
     }
 
     .comments-list {
@@ -349,42 +312,23 @@
       gap: 0.75rem;
       margin-bottom: 1rem;
       padding: 0.75rem;
-      background: rgba(255, 255, 255, 0.02);
+      background: rgba(255,255,255,0.02);
       border-left: 2px solid var(--accent);
       border-radius: 4px;
-    }
-
-    .comment-item {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
+      list-style: none;
     }
 
     .comment-meta {
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      margin-bottom: 0.25rem;
     }
 
-    .comment-author {
-      font-weight: 600;
-      font-size: 0.8rem;
-      color: var(--accent);
-    }
+    .comment-author { font-weight: 600; font-size: 0.8rem; color: var(--accent); }
+    .comment-time   { font-size: 0.7rem; color: var(--muted); }
+    .comment-text   { font-size: 0.85rem; line-height: 1.4; }
 
-    .comment-time {
-      font-size: 0.7rem;
-      color: var(--muted);
-    }
-
-    .comment-text {
-      color: var(--text);
-      font-size: 0.85rem;
-      line-height: 1.4;
-      margin-left: 0.25rem;
-    }
-
-    /* Comment Form */
     .comment-form {
       display: flex;
       gap: 0.5rem;
@@ -406,12 +350,54 @@
     }
 
     .comment-input::placeholder { color: var(--muted); }
-    .comment-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 2px rgba(200,169,110,0.1);
+    .comment-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(200,169,110,0.1); }
+
+    .btn-comment {
+      padding: 0.5rem 1rem;
+      background: var(--accent);
+      color: #0d0d0f;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      white-space: nowrap;
     }
 
-    /* Empty state */
+    .btn-comment:hover { background: var(--accent2); }
+
+    .media-options {
+      margin-top: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .media-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .media-input {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+    }
+
+    .media-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(200,169,110,0.1); }
+
     .empty {
       text-align: center;
       padding: 4rem 2rem;
@@ -419,10 +405,12 @@
       font-size: 0.9rem;
     }
 
-    .empty-icon {
-      font-size: 2.5rem;
-      margin-bottom: 1rem;
-      opacity: 0.4;
+    .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; display: block; }
+
+    .sr-only {
+      position: absolute; width: 1px; height: 1px;
+      padding: 0; overflow: hidden;
+      clip: rect(0,0,0,0); white-space: nowrap; border: 0;
     }
 
     @keyframes fadeUp {
@@ -430,114 +418,149 @@
       to   { opacity: 1; transform: translateY(0); }
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
 </head>
 <body>
 
-<div class="orb"></div>
-
 <nav>
   <a class="nav-logo" href="${pageContext.request.contextPath}/feeds">Miniature</a>
-  <div class="nav-links">
-    <a href="${pageContext.request.contextPath}/home">Accueil</a>
-    <a href="${pageContext.request.contextPath}/logout" class="logout">Se déconnecter</a>
-  </div>
+  <ul class="nav-links">
+    <li><a href="${pageContext.request.contextPath}/home">Accueil</a></li>
+    <li><a href="${pageContext.request.contextPath}/logout" class="logout">Se déconnecter</a></li>
+  </ul>
 </nav>
 
-<div class="layout">
+<main>
 
-  <div class="compose">
-    <div class="compose-label">Nouveau post</div>
-    <form method="post" action="${pageContext.request.contextPath}/feeds">
+  <section class="compose">
+    <p class="compose-label">Nouveau post</p>
+    <form method="post" action="${pageContext.request.contextPath}/feeds" enctype="multipart/form-data">
       <textarea name="newPost" placeholder="Quoi de neuf ?"></textarea>
+      <div class="media-options">
+        <label class="media-label" for="mediaFile">Fichier (image ou vidéo)</label>
+        <input type="file" id="mediaFile" name="mediaFile"
+               accept="image/*,video/mp4,video/webm" class="media-input">
+        <label class="media-label" for="externalUrl">Ou coller un lien externe</label>
+        <input type="url" id="externalUrl" name="externalUrl"
+               placeholder="https://..." class="media-input">
+      </div>
       <div class="compose-footer">
         <button type="submit" class="btn-primary">Publier</button>
       </div>
     </form>
-  </div>
+  </section>
 
-  <div class="feed-tabs">
-    <a href="${pageContext.request.contextPath}/feeds?type=recommendations"
-       class="<%= "recommendations".equals(feedType) ? "active" : "" %>">
-      Recommandations
-    </a>
-    <a href="${pageContext.request.contextPath}/feeds?type=subscriptions"
-       class="<%= "subscriptions".equals(feedType) ? "active" : "" %>">
-      Abonnements
-    </a>
-  </div>
+  <ul class="feed-tabs">
+    <li>
+      <a href="${pageContext.request.contextPath}/feeds?type=recommendations"
+         class="<%= "recommendations".equals(feedType) ? "active" : "" %>">
+        Recommandations
+      </a>
+    </li>
+    <li>
+      <a href="${pageContext.request.contextPath}/feeds?type=subscriptions"
+         class="<%= "subscriptions".equals(feedType) ? "active" : "" %>">
+        Abonnements
+      </a>
+    </li>
+  </ul>
 
-  <div class="post-list">
-    <% if (postList == null || postList.isEmpty()) { %>
-    <div class="empty">
-      <div class="empty-icon">✦</div>
-      <p>Aucun post pour le moment.<br>Soyez le premier à publier !</p>
-    </div>
-    <% } else { %>
-    <% for (Post post : postList) { %>
-    <div class="post-card">
+  <% if (postList == null || postList.isEmpty()) { %>
+    <p class="empty">
+      <span class="empty-icon" aria-hidden="true">✦</span>
+      Aucun post pour le moment.<br>Soyez le premier à publier !
+    </p>
+  <% } else { %>
+    <ul class="post-list">
+      <% for (Post post : postList) { %>
+      <li>
+        <article>
 
-      <!-- POST HEADER -->
-      <div class="post-header">
-        <span class="post-owner">@ <%= post.getOwnerUsername() %></span>
-        <span class="post-date"><%= post.getCreatedAt().format(fmt) %></span>
-      </div>
+          <header>
+            <span class="post-owner">@ <%= post.getOwnerUsername() %></span>
+            <time class="post-date" datetime="<%= post.getCreatedAt() %>">
+              <%= post.getCreatedAt().format(fmt) %>
+            </time>
+          </header>
 
-      <!-- POST CONTENT -->
-      <div class="post-content"><%= post.getContent() %></div>
+          <p class="post-content" data-markdown="<%= post.getContent().replace("\"", "&quot;").replace("<", "&lt;") %>"></p>
 
-      <!-- DRAFT BADGE -->
-      <div style="margin-bottom: 1rem;">
-        <% if (post.isDraft()) { %>
-        <span class="post-draft">Brouillon</span>
-        <% } %>
-      </div>
-
-      <!-- POST ACTIONS (Like) -->
-      <div class="post-actions">
-        <%
-          boolean liked = post.isLiked();
-          String likeClass = liked ? "btn-like liked" : "btn-like";
-        %>
-        <form method="post" action="${pageContext.request.contextPath}/feeds" style="margin: 0; display: flex;">
-          <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
-          <button type="submit" class="<%= likeClass %>">♥ J'aime</button>
-        </form>
-      </div>
-
-      <!-- COMMENTS SECTION (Intégré au post) -->
-      <div class="comments-section">
-
-        <!-- Comments List (si des commentaires existent) -->
-        <% List<Map<String, Object>> comments = post.getComments(); %>
-        <% if (comments != null && !comments.isEmpty()) { %>
-        <div class="comments-list">
-          <% for (Map<String, Object> comment : comments) { %>
-          <div class="comment-item">
-            <div class="comment-meta">
-              <span class="comment-author">@ <%= comment.get("username") %></span>
-              <span class="comment-time"><%= ((LocalDateTime)comment.get("createdAt")).format(fmt) %></span>
+          <% if (post.hasMedia()) { %>
+            <div class="post-media">
+              <% if (post.getAttachmentType() == AttachmentType.IMAGE) { %>
+                <img src="<%= post.getMediaUrl() %>"
+                     alt="Image partagée par <%= post.getOwnerUsername() %>"
+                     class="media-img">
+              <% } else if (post.getAttachmentType() == AttachmentType.VIDEO) { %>
+                <video controls muted class="media-video">
+                  <source src="<%= post.getMediaUrl() %>">
+                </video>
+              <% } else if (post.getAttachmentType() == AttachmentType.LINK) { %>
+                <a href="<%= post.getMediaUrl() %>"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="media-link">
+                  🔗 <%= post.getMediaUrl() %>
+                </a>
+              <% } %>
             </div>
-            <div class="comment-text"><%= comment.get("content") %></div>
-          </div>
           <% } %>
-        </div>
-        <% } %>
 
-        <!-- Comment Form -->
-        <form method="post" action="${pageContext.request.contextPath}/feeds" class="comment-form">
-          <input type="hidden" name="postId" value="<%= post.getId() %>">
-          <input type="text" name="newComment" placeholder="Ajouter un commentaire..." class="comment-input">
-          <button type="submit" class="btn-comment">Envoyer</button>
-        </form>
+          <footer>
+            <%
+              boolean liked = post.isLiked();
+              String likeClass = liked ? "btn-like liked" : "btn-like";
+            %>
+            <form method="post" action="${pageContext.request.contextPath}/feeds"
+                  style="margin:0; display:flex;">
+              <input type="hidden" name="buttonLike" value="<%= post.getId() %>">
+              <button type="submit" class="<%= likeClass %>">♥ J'aime</button>
+            </form>
+          </footer>
 
-      </div>
+          <section class="comments-section">
+            <% List<Map<String, Object>> comments = post.getComments(); %>
+            <% if (comments != null && !comments.isEmpty()) { %>
+              <ul class="comments-list">
+                <% for (Map<String, Object> comment : comments) { %>
+                <li>
+                  <div class="comment-meta">
+                    <span class="comment-author">@ <%= comment.get("username") %></span>
+                    <time class="comment-time" datetime="<%= comment.get("createdAt") %>">
+                      <%= ((LocalDateTime) comment.get("createdAt")).format(fmt) %>
+                    </time>
+                  </div>
+                  <p class="comment-text"><%= comment.get("content") %></p>
+                </li>
+                <% } %>
+              </ul>
+            <% } %>
 
-    </div>
-    <% } %>
-    <% } %>
-  </div>
+            <form method="post" action="${pageContext.request.contextPath}/feeds"
+                  class="comment-form">
+              <input type="hidden" name="postId" value="<%= post.getId() %>">
+              <label for="comment-<%= post.getId() %>" class="sr-only">Commentaire</label>
+              <input type="text"
+                     id="comment-<%= post.getId() %>"
+                     name="newComment"
+                     placeholder="Ajouter un commentaire..."
+                     class="comment-input">
+              <button type="submit" class="btn-comment">Envoyer</button>
+            </form>
+          </section>
 
-</div>
+        </article>
+      </li>
+      <% } %>
+    </ul>
+  <% } %>
+
+</main>
+<script>
+  document.querySelectorAll('[data-markdown]').forEach(el => {
+    el.innerHTML = marked.parse(el.dataset.markdown);
+  });
+</script>
 
 </body>
 </html>

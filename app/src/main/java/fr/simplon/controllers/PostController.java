@@ -25,8 +25,14 @@ public class PostController extends HttpServlet {
         resp.setContentType("text/html; charset=UTF-8");
 
         String feedType = req.getParameter("type");
-        req.setAttribute("feedType", feedType != null ? feedType : "recommendations");
-        req.setAttribute("postList", postList);
+        if(feedType == null) feedType = "recommendations";
+
+        HttpSession session = req.getSession(false);
+        List<Post> filteredPostList = postList;
+
+
+        req.setAttribute("feedType", feedType);
+        req.setAttribute("postList", filteredPostList);
         req.getRequestDispatcher("/feeds.jsp").forward(req, resp);
 
     }
@@ -36,6 +42,7 @@ public class PostController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("text/html; charset=UTF-8");
+
         HttpSession session = req.getSession(false);
         if (session == null || session.getAttribute("loggedUser") == null) {
             resp.sendRedirect(req.getContextPath() + "/login");

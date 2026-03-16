@@ -44,9 +44,29 @@ public class PostController extends HttpServlet {
         }
 
         String feedType = req.getParameter("type");
-        req.setAttribute("feedType", feedType != null ? feedType : "recommendations");
-        req.setAttribute("postList", postList);
+        if (feedType == null) feedType = "recommendations";
+
+        List<Post> postsToShow = postList;
+
+        if (session != null && session.getAttribute("loggedUser") != null) {
+            String username = (String) session.getAttribute("loggedUser");
+            List<User> users = (List<User>) getServletContext().getAttribute("users");
+            User currentUser = findByUserName(username, users);
+
+            if ("subscriptions".equals(feedType) && currentUser != null) {
+                postsToShow = new ArrayList<>();
+                for (Post post : postList) {
+                    if (currentUser.isFollowing(post.getOwner())) {
+                        postsToShow.add(post);
+                    }
+                }
+            }
+        }
+
+        req.setAttribute("feedType", feedType);
+        req.setAttribute("postList", postsToShow);
         req.getRequestDispatcher("/feeds.jsp").forward(req, resp);
+
     }
 
     @Override
@@ -61,16 +81,23 @@ public class PostController extends HttpServlet {
             return;
         }
 
+        String username = (String) session.getAttribute("loggedUser");
+        List<User> users = (List<User>) getServletContext().getAttribute("users");
+        User owner = findByUserName(username, users);
+
         String newPost = req.getParameter("newPost");
         String newComment = req.getParameter("newComment");
         String buttonLike = req.getParameter("buttonLike");
         String postIdStr = req.getParameter("postId");
+        String followUsername = req.getParameter("follow");  // ✅ Récupérer le follow
 
-        if (newPost != null && !newPost.trim().isEmpty()) {
-            String username = (String) session.getAttribute("loggedUser");
-            List<User> users = (List<User>) getServletContext().getAttribute("users");
-            User owner = findByUserName(username, users);
-
+        if (followUsername != null && owner != null) {
+            User userToFollow = findByUserName(followUsername, users);
+            if (userToFollow != null) {
+                owner.follow(userToFollow.getId());
+            }
+        }
+        else if (newPost != null && !newPost.trim().isEmpty()) {
             if (owner != null) {
                 String mediaUrl = null;
                 AttachmentType attachmentType = AttachmentType.NONE;
@@ -116,12 +143,10 @@ public class PostController extends HttpServlet {
                         attachmentType));
                 Collections.sort(postList, Comparator.reverseOrder());
             }
-        } else if (newComment != null && !newComment.trim().isEmpty() && postIdStr != null) {
+        }
+        else if (newComment != null && !newComment.trim().isEmpty() && postIdStr != null) {
             try {
                 long postId = Long.parseLong(postIdStr);
-                String username = (String) session.getAttribute("loggedUser");
-                List<User> users = (List<User>) getServletContext().getAttribute("users");
-                User owner = findByUserName(username, users);
                 if (owner != null) {
                     Post post = findPostById(postId);
                     if (post != null) {
@@ -137,9 +162,6 @@ public class PostController extends HttpServlet {
         else if (buttonLike != null) {
             try {
                 long likePostId = Long.parseLong(buttonLike);
-
-                String username = (String) session.getAttribute("loggedUser");
-                List<User> users = (List<User>) getServletContext().getAttribute("users");
                 User currentUser = findByUserName(username, users);
 
                 if (currentUser != null) {
@@ -154,8 +176,8 @@ public class PostController extends HttpServlet {
                 resp.sendError(400, "ID invalide.");
                 return;
             }
-        }
 
+        }
         resp.sendRedirect(req.getContextPath() + "/feeds");
     }
 

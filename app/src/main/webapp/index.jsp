@@ -231,7 +231,7 @@
   <main>
     <div class="hero">
       <div class="hero-eyebrow">Tableau de bord</div>
-      <h1>Bienvenue, <span>${loggedUser}</span>&nbsp;!</h1>
+      <h1>Bienvenue <span>${loggedUser}</span>&nbsp;!</h1>
       <p class="hero-sub">Vous êtes connecté à votre espace personnel.<br>Retrouvez ici toutes vos ressources.</p>
       <div class="date-badge"><%=date%></div>
     </div>

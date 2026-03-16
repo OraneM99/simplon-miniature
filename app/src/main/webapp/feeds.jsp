@@ -284,7 +284,21 @@
       padding-bottom: 1.5rem;
       border-bottom: 1px solid var(--border);
     }
+    .btn-follow {
+      background: var(--accent);
+      color: #0d0d0f;
+      border: none;
+      border-radius: 6px;
+      padding: 0.35rem 0.85rem;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
 
+    .btn-follow:hover { background: var(--accent2); }
+    .btn-follow:active { transform: scale(0.95); }
     .btn-like {
       background: none;
       border: 1px solid var(--border);
@@ -541,6 +555,8 @@
             <form method="post" action="${pageContext.request.contextPath}/feeds"
                   class="comment-form">
               <input type="hidden" name="postId" value="<%= post.getId() %>">
+              <input type="hidden" name="follow" value="<%= post.getOwnerUsername() %>">
+              <button type="submit" class="btn-follow">Suivre</button>
               <label for="comment-<%= post.getId() %>" class="sr-only">Commentaire</label>
               <input type="text"
                      id="comment-<%= post.getId() %>"
